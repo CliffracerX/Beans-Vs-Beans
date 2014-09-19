@@ -50,9 +50,19 @@ public class Shoot : MonoBehaviour
 	public AudioLowPassFilter filt2;
 	public AudioLowPassFilter filt3;
 	public AudioClip deathNoise;
+	public string team = "Red";
+	public NetworkManager netMan;
+	public TakeDamage dmg;
+	public GameObject mainGunR;
+	public GameObject specialGunR;
+	public GameObject heavyGunR;
+	public bool takenDamageThisTick = false;
+	public bool teamSubtract = true;
 
 	[RPC] public void RecalcHealthMeter(float healthNetworked)
 	{
+		//if(!takenDamageThisTick)
+		{
 		health = healthNetworked;
 		if(health>maxhealth)
 			health=maxhealth;
@@ -65,6 +75,8 @@ public class Shoot : MonoBehaviour
 				Camera.main.fieldOfView=60 + (0.25f/(health / maxhealth));
 			else
 				Camera.main.fieldOfView=62;
+		}
+		takenDamageThisTick=true;
 		}
 	}
 
@@ -97,27 +109,104 @@ public class Shoot : MonoBehaviour
 			ammoCount.text="Ammo (Primary, Special, Heavy): "+(primaryAmmoLeft+ammoInMainGun)+" / "+(specialAmmoLeft+ammoInSpecialGun)+" / "+(heavyAmmoLeft+ammoInHeavyGun);
 	}
 
+	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
+	{
+		int teamS = 0;
+		if(stream.isWriting)
+		{
+			if(team=="Red")
+				teamS=0;
+			else if(team=="Blue")
+				teamS=1;
+			stream.Serialize(ref teamS);
+		}
+		else
+		{
+			stream.Serialize(ref teamS);
+			networkView.RPC("SetTeam", RPCMode.All, teamS);
+		}
+	}
+
 	void Start()
 	{
 		RecalcAmmoMeter();
 		respawnPoint = transform.position;
+		dmg = player.GetComponent("TakeDamage") as TakeDamage;
+		if(!networkView.isMine)
+		{
+			health=0;
+			timeUntilRespawn=2;
+		}
+	}
+
+	public void SetNetworkManager(NetworkManager net)
+	{
+		netMan=net;
+	}
+
+	[RPC] void SetTeam(int teamI)
+	{
+		if(teamI==0)
+		{
+			team="Red";
+			player.renderer.material.color=new Color(1, 0, 0);
+			mainGunR.renderer.material.color=new Color(0.75f, 0.25f, 0.25f);
+			specialGunR.renderer.material.color=new Color(0.75f, 0.25f, 0.25f);
+			heavyGunR.renderer.material.color=new Color(0.75f, 0.25f, 0.25f);
+			respawnPoint=NetworkManager.redSpawnV;
+			NetworkManager.redPlayers+=1;
+		}
+		else if(teamI==1)
+		{
+			team="Blue";
+			player.renderer.material.color=new Color(0, 0, 1);
+			mainGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.75f);
+			specialGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.75f);
+			heavyGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.75f);
+			respawnPoint=NetworkManager.blueSpawnV;
+			NetworkManager.bluePlayers+=1;
+		}
 	}
 	
 	void Update()
 	{
 		if(player.networkView.isMine)
 		{
+			takenDamageThisTick=false;
 			if(health<1 && timeUntilRespawn==respawnSpeed)
 			{
 				audio.clip=deathNoise;
 				audio.Play();
+				if(team=="Red" && teamSubtract)
+				{
+					NetworkManager.redPlayers-=1f;
+					teamSubtract=false;
+					netMan.blueTeamScore+=1;
+				}
+				if(team=="Blue" && teamSubtract)
+				{
+					NetworkManager.bluePlayers-=1f;
+					teamSubtract=false;
+					netMan.redTeamScore+=1;
+				}
+				playerpos=player.transform.position;
+				playerpos.y-=1;
 			}
 			if(health<1)
 			{
 				ammoCount.color=Color.red;
 				ammoCount.text="You're dead!";
 				player.transform.position=playerpos;
-				timeUntilRespawn--;
+				if(team=="Red")
+				{
+					if(netMan.blueTeamScore<netMan.numberOfPointsToWin)
+						timeUntilRespawn--;
+				}
+				else if(team=="Blue")
+				{
+					if(netMan.redTeamScore<netMan.numberOfPointsToWin)
+						timeUntilRespawn--;
+				}
 				networkView.RPC("EnableGun", RPCMode.All, 0, false);
 				mainGunOut=false;
 				networkView.RPC("EnableGun", RPCMode.All, 1, false);
@@ -125,7 +214,7 @@ public class Shoot : MonoBehaviour
 				networkView.RPC("EnableGun", RPCMode.All, 2, false);
 				heavyGunOut=false;
 			}
-			if(health<1 && timeUntilRespawn==0)
+			if(health<1 && timeUntilRespawn<1)
 			{
 				primaryAmmoLeft=mainGunClipsize*3;
 				ammoInMainGun=mainGunClipsize;
@@ -136,8 +225,28 @@ public class Shoot : MonoBehaviour
 				timeUntilRespawn=respawnSpeed;
 				RecalcAmmoMeter();
 				ammoCount.color=Color.white;
-				player.transform.position=respawnPoint;
 				networkView.RPC("RecalcHealthMeter", RPCMode.All, maxhealth);
+				if(NetworkManager.redPlayers<NetworkManager.bluePlayers)
+				{
+					networkView.RPC("SetTeam", RPCMode.All, 0);
+				}
+				else if(NetworkManager.bluePlayers<NetworkManager.redPlayers)
+				{
+					networkView.RPC("SetTeam", RPCMode.All, 1);
+				}
+				else if(NetworkManager.redPlayers==NetworkManager.bluePlayers)
+				{
+					if(Random.Range(0, 10)<=5)
+					{
+						networkView.RPC("SetTeam", RPCMode.All, 0);
+					}
+					else
+					{
+						networkView.RPC("SetTeam", RPCMode.All, 1);
+					}
+				}
+				teamSubtract=true;
+				player.transform.position=respawnPoint;
 			}
 			if(Input.GetKeyDown("1"))
 			{
