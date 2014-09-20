@@ -22,7 +22,8 @@ public class Shoot : MonoBehaviour
 	public int timeSinceLastDamageTaken = 100;
 	public int timeUntilHPRegen = 10;
 	public float healthBarLength = (Screen.width / 4) * (100/50);
-	public GUISkin skin;
+	public GUISkin skinR;
+	public GUISkin skinB;
 	public GUISkin skin2;
 	public GameObject bulletPoint;
 	public AudioClip[] fireSounds;
@@ -86,7 +87,10 @@ public class Shoot : MonoBehaviour
 		{
 		GUI.Box(new Rect((Screen.width/2)-(Screen.width/4), 10, Screen.width/4, 20),"",skin2.box);
 		healthBarLength = (Screen.width / 4) * (health / (float)maxhealth);
-			GUI.Box(new Rect((Screen.width/2)-((Screen.width/4)*(health / (float)maxhealth)), 10, ((Screen.width/4)*(health / (float)maxhealth))*(health / (float)maxhealth), 20),health + "/" + maxhealth,skin.box);
+			if(team=="Red")
+				GUI.Box(new Rect((Screen.width/2)-((Screen.width/4)*(health / (float)maxhealth)), 10, ((Screen.width/4)*(health / (float)maxhealth))*(health / (float)maxhealth), 20),health + "/" + maxhealth,skinR.box);
+			if(team=="Blue")
+				GUI.Box(new Rect((Screen.width/2)-((Screen.width/4)*(health / (float)maxhealth)), 10, ((Screen.width/4)*(health / (float)maxhealth))*(health / (float)maxhealth), 20),health + "/" + maxhealth,skinB.box);
 		}
 	}
 
@@ -94,7 +98,7 @@ public class Shoot : MonoBehaviour
 	{
 		networkView.RPC("RecalcHealthMeter", RPCMode.All, 0f);
 		timeUntilRespawn=respawnSpeed;
-		playerpos=player.transform.position;
+	
 	}
 
 	public void RecalcAmmoMeter()
@@ -150,9 +154,9 @@ public class Shoot : MonoBehaviour
 		{
 			team="Red";
 			player.renderer.material.color=new Color(1, 0, 0);
-			mainGunR.renderer.material.color=new Color(0.75f, 0.25f, 0.25f);
+			mainGunR.renderer.material.color=new Color(0.65f, 0.25f, 0.25f);
 			specialGunR.renderer.material.color=new Color(0.75f, 0.25f, 0.25f);
-			heavyGunR.renderer.material.color=new Color(0.75f, 0.25f, 0.25f);
+			heavyGunR.renderer.material.color=new Color(0.85f, 0.25f, 0.25f);
 			respawnPoint=NetworkManager.redSpawnV;
 			NetworkManager.redPlayers+=1;
 		}
@@ -160,9 +164,9 @@ public class Shoot : MonoBehaviour
 		{
 			team="Blue";
 			player.renderer.material.color=new Color(0, 0, 1);
-			mainGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.75f);
+			mainGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.65f);
 			specialGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.75f);
-			heavyGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.75f);
+			heavyGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.85f);
 			respawnPoint=NetworkManager.blueSpawnV;
 			NetworkManager.bluePlayers+=1;
 		}
@@ -362,6 +366,7 @@ public class Shoot : MonoBehaviour
 					ammoInMainGun--;
 					RecalcAmmoMeter();
 					timeSinceLMF=0;
+					bullet.transform.GetChild(0).renderer.material.color=mainGun.transform.GetChild(0).renderer.material.color;
 					networkView.RPC("PlaySound", RPCMode.All, 0, 0);
 				}
 				if(specialGunOut && timeSinceLSF>specialGunFireSpeed && ammoInSpecialGun>0)
@@ -371,6 +376,7 @@ public class Shoot : MonoBehaviour
 					ammoInSpecialGun--;
 					RecalcAmmoMeter();
 					timeSinceLSF=0;
+					bullet.transform.GetChild(0).renderer.material.color=specialGun.transform.GetChild(0).renderer.material.color;
 					networkView.RPC("PlaySound", RPCMode.All, 0, 1);
 				}
 				if(heavyGunOut && timeSinceLHF>heavyGunFireSpeed && ammoInHeavyGun>0)
@@ -380,6 +386,7 @@ public class Shoot : MonoBehaviour
 					ammoInHeavyGun--;
 					RecalcAmmoMeter();
 					timeSinceLHF=0;
+					bullet.transform.GetChild(0).renderer.material.color=heavyGun.transform.GetChild(0).renderer.material.color;
 					networkView.RPC("PlaySound", RPCMode.All, 0, 2);
 				}
 			}
