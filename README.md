@@ -4,6 +4,8 @@ Beans Vs Beans is a weird FPS game made in Unity, by CliffracerX!
 
 This is a WIP and likely to have some weird bugs, but has decently simple controls and basic gameplay.
 
+If you want a decently well-updated todolist, check the official trello: https://trello.com/b/AQp1RLhC/beans-vs-beans-todo
+
 * 1, 2, and 3 let you take out your 3 different guns (keep an eye on your ammo count in the top left corner)
 * Left mouse button shoots (if you have ammo left, that is)
 * R reloads
