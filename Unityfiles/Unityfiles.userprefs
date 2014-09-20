@@ -1,0 +1,14 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace />
+  <MonoDevelop.Ide.Workbench ActiveDocument="..\..\..\FPSMMO\Assets\Scripts\TakeDamage.cs">
+    <Files>
+      <File FileName="Assets\Scripts\Shoot.cs" Line="94" Column="4" />
+      <File FileName="..\..\..\FPSMMO\Assets\Scripts\ProjectileScript.cs" Line="18" Column="3" />
+      <File FileName="..\..\..\FPSMMO\Assets\Scripts\TakeDamage.cs" Line="28" Column="5" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

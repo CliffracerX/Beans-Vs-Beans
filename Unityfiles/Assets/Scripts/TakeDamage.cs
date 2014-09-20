@@ -13,7 +13,7 @@ public class TakeDamage : MonoBehaviour
 	public int SammoCrateRespawntime = 5000;
 	public int HammoCrateRespawntime = 5000;
 	public AudioClip pickupSound;
-
+	
 	void OnTriggerEnter(Collider other)
 	{
 		if(other.tag=="Instadeath")
@@ -23,7 +23,12 @@ public class TakeDamage : MonoBehaviour
 		if(other.tag=="Bullet")
 		{
 			ProjectileScript proj = other.gameObject.GetComponent<ProjectileScript>();
-			shootScript.networkView.RPC("RecalcHealthMeter", RPCMode.All, shootScript.health-proj.damageDone);
+			if(proj.networkView.isMine)
+			{
+				shootScript.networkView.RPC("RecalcHealthMeter", RPCMode.All, shootScript.health-proj.damageDone);
+				proj.networkView.RPC("DestroyO", RPCMode.All);
+				Destroy(proj.gameObject);
+			}
 		}
 		if(other.tag=="PrimaryAmmoCrate")
 		{

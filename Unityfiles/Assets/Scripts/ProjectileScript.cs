@@ -12,4 +12,9 @@ public class ProjectileScript : MonoBehaviour
 		if(fadeTime<=0)
 			Destroy(this.gameObject);
 	}
+	
+	[RPC] void DestroyO()
+	{
+		Destroy(this.gameObject);
+	}
 }
