@@ -59,6 +59,9 @@ public class Shoot : MonoBehaviour
 	public GameObject heavyGunR;
 	public bool takenDamageThisTick = false;
 	public bool teamSubtract = true;
+	public AnimationClip[] mainGunAnims;
+	public AnimationClip[] specialGunAnims;
+	public AnimationClip[] heavyGunAnims;
 
 	[RPC] public void RecalcHealthMeter(float healthNetworked)
 	{
@@ -176,6 +179,60 @@ public class Shoot : MonoBehaviour
 	{
 		if(player.networkView.isMine)
 		{
+			if((Input.GetButton("Horizontal") || Input.GetButton("Vertical")) && !Input.GetButton("Sprint"))
+			{
+				bool mainGunShooting = timeSinceLMF<mainGun.transform.GetChild(0).animation.clip.length*60;
+				bool specialGunShooting = timeSinceLSF<specialGun.transform.GetChild(0).animation.clip.length*60;
+				bool heavyGunShooting = timeSinceLHF<heavyGun.transform.GetChild(0).animation.clip.length*60;
+				if(!mainGunShooting && !heavyGunShooting && !specialGunShooting)
+				{
+					mainGun.transform.GetChild(0).animation.clip=mainGunAnims[0];
+					specialGun.transform.GetChild(0).animation.clip=specialGunAnims[0];
+					heavyGun.transform.GetChild(0).animation.clip=heavyGunAnims[0];
+					mainGun.transform.GetChild(0).animation.CrossFade("Walk");
+					specialGun.transform.GetChild(0).animation.CrossFade("Walk");
+					heavyGun.transform.GetChild(0).animation.CrossFade("Walk");
+					mainGun.transform.GetChild(0).animation.Play();
+					specialGun.transform.GetChild(0).animation.Play();
+					heavyGun.transform.GetChild(0).animation.Play();
+				}
+			}
+			if((Input.GetButton("Horizontal") || Input.GetButton("Vertical")) && Input.GetButton("Sprint"))
+			{
+				bool mainGunShooting = timeSinceLMF<mainGun.transform.GetChild(0).animation.clip.length*60;
+				bool specialGunShooting = timeSinceLSF<specialGun.transform.GetChild(0).animation.clip.length*60;
+				bool heavyGunShooting = timeSinceLHF<heavyGun.transform.GetChild(0).animation.clip.length*60;
+				if(!mainGunShooting && !heavyGunShooting && !specialGunShooting)
+				{
+					mainGun.transform.GetChild(0).animation.clip=mainGunAnims[1];
+					specialGun.transform.GetChild(0).animation.clip=specialGunAnims[1];
+					heavyGun.transform.GetChild(0).animation.clip=heavyGunAnims[1];
+					mainGun.transform.GetChild(0).animation.CrossFade("Run");
+					specialGun.transform.GetChild(0).animation.CrossFade("Run");
+					heavyGun.transform.GetChild(0).animation.CrossFade("Run");
+					mainGun.transform.GetChild(0).animation.Play();
+					specialGun.transform.GetChild(0).animation.Play();
+					heavyGun.transform.GetChild(0).animation.Play();
+				}
+			}
+			if(!Input.GetButton("Horizontal") && !Input.GetButton("Vertical"))
+			{
+				bool mainGunShooting = timeSinceLMF<mainGun.transform.GetChild(0).animation.clip.length*60;
+				bool specialGunShooting = timeSinceLSF<specialGun.transform.GetChild(0).animation.clip.length*60;
+				bool heavyGunShooting = timeSinceLHF<heavyGun.transform.GetChild(0).animation.clip.length*60;
+				if(!mainGunShooting && !heavyGunShooting && !specialGunShooting)
+				{
+					mainGun.transform.GetChild(0).animation.clip=mainGunAnims[3];
+					specialGun.transform.GetChild(0).animation.clip=specialGunAnims[3];
+					heavyGun.transform.GetChild(0).animation.clip=heavyGunAnims[3];
+					mainGun.transform.GetChild(0).animation.CrossFade("Not Moving");
+					specialGun.transform.GetChild(0).animation.CrossFade("Not Moving");
+					heavyGun.transform.GetChild(0).animation.CrossFade("Not Moving");
+					mainGun.transform.GetChild(0).animation.Play();
+					specialGun.transform.GetChild(0).animation.Play();
+					heavyGun.transform.GetChild(0).animation.Play();
+				}
+			}
 			takenDamageThisTick=false;
 			if(health<1 && timeUntilRespawn==respawnSpeed)
 			{
@@ -368,6 +425,10 @@ public class Shoot : MonoBehaviour
 					timeSinceLMF=0;
 					bullet.transform.GetChild(0).renderer.material.color=mainGun.transform.GetChild(0).renderer.material.color;
 					networkView.RPC("PlaySound", RPCMode.All, 0, 0);
+					mainGun.transform.GetChild(0).animation.clip=mainGunAnims[2];
+					mainGun.transform.GetChild(0).animation.CrossFade("Shoot");
+					mainGun.transform.GetChild(0).animation.Stop();
+					mainGun.transform.GetChild(0).animation.Play();
 				}
 				if(specialGunOut && timeSinceLSF>specialGunFireSpeed && ammoInSpecialGun>0)
 				{
@@ -378,6 +439,10 @@ public class Shoot : MonoBehaviour
 					timeSinceLSF=0;
 					bullet.transform.GetChild(0).renderer.material.color=specialGun.transform.GetChild(0).renderer.material.color;
 					networkView.RPC("PlaySound", RPCMode.All, 0, 1);
+					specialGun.transform.GetChild(0).animation.clip=specialGunAnims[2];
+					specialGun.transform.GetChild(0).animation.CrossFade("Shoot");
+					specialGun.transform.GetChild(0).animation.Stop();
+					specialGun.transform.GetChild(0).animation.Play();
 				}
 				if(heavyGunOut && timeSinceLHF>heavyGunFireSpeed && ammoInHeavyGun>0)
 				{
@@ -388,6 +453,10 @@ public class Shoot : MonoBehaviour
 					timeSinceLHF=0;
 					bullet.transform.GetChild(0).renderer.material.color=heavyGun.transform.GetChild(0).renderer.material.color;
 					networkView.RPC("PlaySound", RPCMode.All, 0, 2);
+					heavyGun.transform.GetChild(0).animation.clip=heavyGunAnims[2];
+					heavyGun.transform.GetChild(0).animation.CrossFade("Shoot");
+					heavyGun.transform.GetChild(0).animation.Stop();
+					heavyGun.transform.GetChild(0).animation.Play();
 				}
 			}
 		}

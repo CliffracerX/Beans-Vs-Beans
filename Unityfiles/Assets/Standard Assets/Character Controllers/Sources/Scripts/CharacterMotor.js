@@ -357,6 +357,29 @@ private function ApplyInputVelocityChange (velocity : Vector3) {
 	}
 	else
 		desiredVelocity = GetDesiredHorizontalVelocity();
+		
+		if(Input.GetButton("Sprint"))
+		{
+			desiredVelocity.x*=1.5f;
+			desiredVelocity.z*=1.5f;
+		}
+		/*else if(Input.GetButtonDown("Crouch"))
+		{
+			desiredVelocity.x*=0.25f;
+			desiredVelocity.z*=0.25f;
+			gameObject.renderer.transform.localScale.x=0.45f;
+			gameObject.renderer.transform.localScale.y=0.5f;
+			gameObject.renderer.transform.localScale.z=0.45f;
+		}
+		else if(Input.GetButtonUp("Crouch"))
+		{
+			transform.localScale.y=1.0f;
+			transform.position.y+=1.0f;
+			gameObject.renderer.transform.localPosition.y+=0.5f;
+			gameObject.renderer.transform.localScale.x=1f;
+			gameObject.renderer.transform.localScale.y=1f;
+			gameObject.renderer.transform.localScale.z=1f;
+		}*/
 	
 	if (movingPlatform.enabled && movingPlatform.movementTransfer == MovementTransferOnJump.PermaTransfer) {
 		desiredVelocity += movement.frameVelocity;
