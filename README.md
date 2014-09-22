@@ -20,4 +20,4 @@ Music is by Kevin MacLeod, here's his site: http://incompetech.com/music/
 
 Sounds are from freesound most of the time (with the exception of the death noise and 3rd gun fire noise), check the UnityFiles/Assets/Sound/Attribution.txt file for more.
 
-All assets are either made by me or from the Unity Standard Assets.
+All the other assets are either made by me or from the Unity Standard Assets.
