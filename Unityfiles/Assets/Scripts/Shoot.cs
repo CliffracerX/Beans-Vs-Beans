@@ -62,6 +62,18 @@ public class Shoot : MonoBehaviour
 	public AnimationClip[] mainGunAnims;
 	public AnimationClip[] specialGunAnims;
 	public AnimationClip[] heavyGunAnims;
+	public GameObject machinegun;
+	public GameObject revolver;
+	public int[] primaryClipsizes;
+	public int[] primaryFireSpeed;
+	public bool[] autoPrimary;
+	public int[] primaryDamageL;
+	public bool isAutoPrimary;
+	public int primaryDamage;
+	public AnimationClip[] machinegunAnims;
+	public AnimationClip[] revolverAnims;
+	public AudioClip[] primaryReloadSounds;
+	public AudioClip[] primaryShootSounds;
 
 	[RPC] public void RecalcHealthMeter(float healthNetworked)
 	{
@@ -179,6 +191,108 @@ public class Shoot : MonoBehaviour
 	{
 		if(player.networkView.isMine)
 		{
+			if(Input.GetKeyUp("."))
+			{
+				primaryAmmoLeft+=ammoInMainGun;
+				ammoInMainGun=0;
+				mainGunClipsize=primaryClipsizes[1];
+				mainGunFireSpeed=primaryFireSpeed[1];
+				isAutoPrimary=autoPrimary[1];
+				reloadSounds[0]=primaryReloadSounds[1];
+				fireSounds[0]=primaryShootSounds[1];
+				mainGunAnims=machinegunAnims;
+				if(primaryAmmoLeft>0)
+				{
+					int ammoUsed = mainGunClipsize - ammoInMainGun;
+					ammoInMainGun = mainGunClipsize;
+					primaryAmmoLeft-=ammoUsed;
+					if(primaryAmmoLeft<0)
+					{
+						ammoInMainGun+=primaryAmmoLeft;
+						primaryAmmoLeft=0;
+					}
+					RecalcAmmoMeter();
+				}
+				networkView.RPC("EnableGun", RPCMode.All, 0, false);
+				mainGunOut=false;
+				mainGun=machinegun;
+				primaryDamage=primaryDamageL[1];
+				mainGunR=mainGun.transform.GetChild(0).gameObject;
+				int teamI=0;
+				if(team=="Blue")
+					teamI=1;
+				if(teamI==0)
+				{
+					team="Red";
+					player.renderer.material.color=new Color(1, 0, 0);
+					mainGunR.renderer.material.color=new Color(0.65f, 0.25f, 0.25f);
+					specialGunR.renderer.material.color=new Color(0.75f, 0.25f, 0.25f);
+					heavyGunR.renderer.material.color=new Color(0.85f, 0.25f, 0.25f);
+					respawnPoint=NetworkManager.redSpawnV;
+					NetworkManager.redPlayers+=1;
+				}
+				else if(teamI==1)
+				{
+					team="Blue";
+					player.renderer.material.color=new Color(0, 0, 1);
+					mainGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.65f);
+					specialGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.75f);
+					heavyGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.85f);
+					respawnPoint=NetworkManager.blueSpawnV;
+					NetworkManager.bluePlayers+=1;
+				}
+			}
+			if(Input.GetKeyUp(","))
+			{
+				primaryAmmoLeft+=ammoInMainGun;
+				ammoInMainGun=0;
+				mainGunClipsize=primaryClipsizes[0];
+				mainGunFireSpeed=primaryFireSpeed[0];
+				isAutoPrimary=autoPrimary[0];
+				reloadSounds[0]=primaryReloadSounds[0];
+				fireSounds[0]=primaryShootSounds[0];
+				mainGunAnims=revolverAnims;
+				if(primaryAmmoLeft>0)
+				{
+					int ammoUsed = mainGunClipsize - ammoInMainGun;
+					ammoInMainGun = mainGunClipsize;
+					primaryAmmoLeft-=ammoUsed;
+					if(primaryAmmoLeft<0)
+					{
+						ammoInMainGun+=primaryAmmoLeft;
+						primaryAmmoLeft=0;
+					}
+					RecalcAmmoMeter();
+				}
+				networkView.RPC("EnableGun", RPCMode.All, 0, false);
+				mainGunOut=false;
+				mainGun=revolver;
+				primaryDamage=primaryDamageL[0];
+				mainGunR=mainGun.transform.GetChild(0).gameObject;
+				int teamI=0;
+				if(team=="Blue")
+					teamI=1;
+				if(teamI==0)
+				{
+					team="Red";
+					player.renderer.material.color=new Color(1, 0, 0);
+					mainGunR.renderer.material.color=new Color(0.65f, 0.25f, 0.25f);
+					specialGunR.renderer.material.color=new Color(0.75f, 0.25f, 0.25f);
+					heavyGunR.renderer.material.color=new Color(0.85f, 0.25f, 0.25f);
+					respawnPoint=NetworkManager.redSpawnV;
+					NetworkManager.redPlayers+=1;
+				}
+				else if(teamI==1)
+				{
+					team="Blue";
+					player.renderer.material.color=new Color(0, 0, 1);
+					mainGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.65f);
+					specialGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.75f);
+					heavyGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.85f);
+					respawnPoint=NetworkManager.blueSpawnV;
+					NetworkManager.bluePlayers+=1;
+				}
+			}
 			if((Input.GetButton("Horizontal") || Input.GetButton("Vertical")) && !Input.GetButton("Sprint"))
 			{
 				bool mainGunShooting = timeSinceLMF<mainGun.transform.GetChild(0).animation.clip.length*60;
@@ -277,8 +391,8 @@ public class Shoot : MonoBehaviour
 			}
 			if(health<1 && timeUntilRespawn<1)
 			{
-				primaryAmmoLeft=mainGunClipsize*3;
-				ammoInMainGun=mainGunClipsize;
+				primaryAmmoLeft=primaryClipsizes[0]*3;
+				ammoInMainGun=primaryClipsizes[0];
 				specialAmmoLeft=specialGunClipsize*1;
 				ammoInSpecialGun=specialGunClipsize;
 				heavyAmmoLeft=heavyGunClipsize*0;
@@ -413,13 +527,34 @@ public class Shoot : MonoBehaviour
 			}
 			if(Input.GetButtonUp("Unlock"))
 				Screen.lockCursor=false;
-			if(Input.GetButtonUp("Fire1"))
+			if(Input.GetButton("Fire1"))
 			{
-				Screen.lockCursor=true;
-				if(mainGunOut && timeSinceLMF>mainGunFireSpeed && ammoInMainGun>0)
+				if(mainGunOut && timeSinceLMF>mainGunFireSpeed && ammoInMainGun>0 && isAutoPrimary)
 				{
 					GameObject bullet = (GameObject)Network.Instantiate(mainShot, bulletPoint.transform.position, transform.rotation, 1);
 					bullet.rigidbody.velocity = transform.TransformDirection(Vector3.forward*mainGunBulletspeed);
+					ProjectileScript proj = bullet.GetComponent<ProjectileScript>();
+					proj.damageDone=primaryDamage;
+					ammoInMainGun--;
+					RecalcAmmoMeter();
+					timeSinceLMF=0;
+					bullet.transform.GetChild(0).renderer.material.color=mainGun.transform.GetChild(0).renderer.material.color;
+					networkView.RPC("PlaySound", RPCMode.All, 0, 0);
+					mainGun.transform.GetChild(0).animation.clip=mainGunAnims[2];
+					mainGun.transform.GetChild(0).animation.CrossFade("Shoot");
+					mainGun.transform.GetChild(0).animation.Stop();
+					mainGun.transform.GetChild(0).animation.Play();
+				}
+			}
+			if(Input.GetButtonUp("Fire1"))
+			{
+				Screen.lockCursor=true;
+				if(mainGunOut && timeSinceLMF>mainGunFireSpeed && ammoInMainGun>0 && !isAutoPrimary)
+				{
+					GameObject bullet = (GameObject)Network.Instantiate(mainShot, bulletPoint.transform.position, transform.rotation, 1);
+					bullet.rigidbody.velocity = transform.TransformDirection(Vector3.forward*mainGunBulletspeed);
+					ProjectileScript proj = bullet.GetComponent<ProjectileScript>();
+					proj.damageDone=primaryDamage;
 					ammoInMainGun--;
 					RecalcAmmoMeter();
 					timeSinceLMF=0;
