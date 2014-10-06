@@ -1,51 +1,13 @@
 Base path: C:/Program Files (x86)/Unity/Editor/Data
-Pipe name: \\.\pipe\UnityShaderCompiler-5-8976
+Pipe name: \\.\pipe\UnityShaderCompiler-5-3600
 Cmd: getPlatforms
 Cmd: compileSnippet
-  api=1 type=1 insize=6564 outsize=457 kw= ok=1
+  api=0 type=0 insize=4871 outsize=436 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_ON DIRLIGHTMAP_OFF ok=1
 Cmd: compileSnippet
-  api=8 type=1 insize=6560 outsize=2332 kw= ok=1
+  api=0 type=1 insize=4871 outsize=535 kw=DIRECTIONAL SHADOWS_SCREEN LIGHTMAP_OFF DIRLIGHTMAP_OFF ok=1
 Cmd: compileSnippet
-  api=1 type=1 insize=6563 outsize=739 kw= ok=1
-Cmd: compileSnippet
-  api=1 type=1 insize=6563 outsize=456 kw= ok=1
-Cmd: compileSnippet
-  api=0 type=0 insize=6577 outsize=328 kw= ok=1
-Cmd: compileSnippet
-  api=0 type=0 insize=6568 outsize=328 kw= ok=1
-Cmd: compileSnippet
-  api=1 type=0 insize=11215 outsize=156 kw= ok=1
-Cmd: compileSnippet
-  api=0 type=0 insize=11225 outsize=3130 kw= ok=1
-Cmd: compileSnippet
-  api=0 type=0 insize=11212 outsize=714 kw= ok=1
-Cmd: compileSnippet
-  api=0 type=0 insize=11211 outsize=1737 kw= ok=1
-Cmd: compileSnippet
-  api=0 type=0 insize=11217 outsize=3902 kw= ok=1
-Cmd: compileSnippet
-  api=0 type=0 insize=1171 outsize=604 kw= ok=1
-Cmd: compileSnippet
-  api=1 type=0 insize=3253 outsize=335 kw= ok=1
-Cmd: compileSnippet
-  api=1 type=0 insize=3251 outsize=335 kw= ok=1
-Cmd: compileSnippet
-  api=1 type=0 insize=3267 outsize=344 kw= ok=1
-Cmd: compileSnippet
-  api=0 type=1 insize=3259 outsize=213 kw= ok=1
-Cmd: compileSnippet
-  api=0 type=0 insize=3256 outsize=375 kw= ok=1
-Cmd: compileSnippet
-  api=8 type=1 insize=3268 outsize=1942 kw= ok=1
-Cmd: compileSnippet
-  api=8 type=0 insize=3254 outsize=2023 kw= ok=1
-Cmd: compileSnippet
-  api=8 type=0 insize=3258 outsize=2023 kw= ok=1
-Cmd: compileSnippet
-  api=1 type=0 insize=3253 outsize=335 kw= ok=1
-Cmd: compileSnippet
-  api=0 type=0 insize=4698 outsize=328 kw= ok=1
-Cmd: compileSnippet
-  api=8 type=0 insize=4703 outsize=3015 kw= ok=1
-Cmd: compileSnippet
-  api=1 type=0 insize=4713 outsize=363 kw= ok=1
+  api=0 type=0 insize=2847 outsize=817 kw=POINT_COOKIE ok=1
+Unhandled exception: Readfile from pipe failed. GLE=The pipe has been ended.
+
+
+Quitting shader compiler process
