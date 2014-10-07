@@ -14,23 +14,23 @@ public class Music : MonoBehaviour
 		{
 			status="neardeath";
 			audio.clip=nearGameOver[Random.Range(0, nearGameOver.Length)];
-			audio.Play();
+			//audio.Play();
 		}
 		else if(shootS.health>(shootS.maxhealth/2) && status=="neardeath")
 		{
 			status="normal";
 			audio.clip=normal[Random.Range(0, normal.Length)];
-			audio.Play();
+			//audio.Play();
 		}
 		if(audio.isPlaying==false && status=="normal")
 		{
 			audio.clip=normal[Random.Range(0, normal.Length)];
-			audio.Play();
+			//audio.Play();
 		}
 		if(audio.isPlaying==false && status=="neardeath")
 		{
 			audio.clip=nearGameOver[Random.Range(0, nearGameOver.Length)];
-			audio.Play();
+			//audio.Play();
 		}
 	}
 }
