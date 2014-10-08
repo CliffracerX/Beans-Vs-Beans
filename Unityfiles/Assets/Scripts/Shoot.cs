@@ -133,6 +133,10 @@ public class Shoot : MonoBehaviour
 			ammoCount.text="Ammo (Heavy): "+ammoInHeavyGun+" / "+heavyAmmoLeft;
 		if(!mainGunOut && !specialGunOut && !heavyGunOut)
 			ammoCount.text="Ammo (Primary, Special, Heavy): "+(primaryAmmoLeft+ammoInMainGun)+" / "+(specialAmmoLeft+ammoInSpecialGun)+" / "+(heavyAmmoLeft+ammoInHeavyGun);
+		if(team=="Red")
+			ammoCount.text+=" On Team A";
+		if(team=="Blue")
+			ammoCount.text+=" On Team B";
 	}
 
 	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
@@ -188,8 +192,8 @@ public class Shoot : MonoBehaviour
 			respawnPoint=netMan.blueSpawnV;
 			netMan.bluePlayers+=1;
 		}
-		audio.clip=teamAnnounces[teamI];
-		audio.Play();
+		//audio.clip=teamAnnounces[teamI];
+		//audio.Play();
 	}
 	
 	void Update()
