@@ -1,9 +1,11 @@
 Revolver reload: http://www.freesound.org/people/Dredile/sounds/177863/
 Revolver fire (1 of 6 from): http://www.freesound.org/people/Jon285/sounds/49512/
-OLD Sniper reload: Some of http://www.freesound.org/people/MentalSanityOff/sounds/218319/ with some of the revolver reload (in particular, the little metal clink)
+Item pickup: Clip of revolver reload, very beginning sort of picky-uppy sound
+Sniper reload: Some of http://www.freesound.org/people/MentalSanityOff/sounds/218319/ with some of the revolver reload (in particular, the little metal clink)
 Sniper fire: http://www.freesound.org/people/Omar%20Alvarado/sounds/118450/
 OLD Heavy gun reload uses some of: http://www.freesound.org/people/MentalSanityOff/sounds/218319/
 OLD Machinegun reload uses some of: http://www.freesound.org/people/MentalSanityOff/sounds/218319/
 Machinegun fire: http://www.freesound.org/people/CGEffex/sounds/101962/
 Heavy gun fire/death sound: Me making derpy noises
 Machinegun reload, Sniper reload: Me using random nerf guns I have sitting around (Maybe this'll be a weird Nerf FPS?)
+Night-time sound: http://www.freesound.org/people/FonotecadeCanarias/sounds/210943/

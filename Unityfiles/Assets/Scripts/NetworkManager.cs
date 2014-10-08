@@ -13,12 +13,12 @@ public class NetworkManager : MonoBehaviour
 	public int redTeamScore = 0;
 	public int blueTeamScore = 0;
 	public int numberOfPointsToWin = 500;
-	public static float redPlayers = 0;
-	public static float bluePlayers = 0;
+	public float redPlayers = 0;
+	public float bluePlayers = 0;
 	public GameObject redSpawnpoint;
 	public GameObject blueSpawnpoint;
-	public static Vector3 redSpawnV;
-	public static Vector3 blueSpawnV;
+	public Vector3 redSpawnV;
+	public Vector3 blueSpawnV;
 	public bool lostPlayerThisTick = false;
 	public GUIText redScoreText;
 	public GUIText blueScoreText;
@@ -34,8 +34,8 @@ public class NetworkManager : MonoBehaviour
 	{
 		if(!doOnceWin)
 		{
-			redScoreText.text="Red Team: "+redTeamScore+"/"+numberOfPointsToWin;
-			blueScoreText.text="Blue Team: "+blueTeamScore+"/"+numberOfPointsToWin;
+			redScoreText.text="Team A: "+redTeamScore+"/"+numberOfPointsToWin;
+			blueScoreText.text="Team B: "+blueTeamScore+"/"+numberOfPointsToWin;
 		}
 		if(timeUntilScoreReset!=-1337)
 			timeUntilScoreReset--;
@@ -48,22 +48,22 @@ public class NetworkManager : MonoBehaviour
 		}
 		if(redTeamScore/numberOfPointsToWin>0.75 && !doOnceWin)
 		{
-			redScoreText.text+=", RED IS CLOSE TO WINNING";
+			redScoreText.text+=", TEAM A IS CLOSE TO WINNING";
 		}
 		if(blueTeamScore/numberOfPointsToWin>0.75 && !doOnceWin)
 		{
-			blueScoreText.text+=", BLUE IS CLOSE TO WINNING";
+			blueScoreText.text+=", TEAM B IS CLOSE TO WINNING";
 		}
 		if(redTeamScore>=numberOfPointsToWin && !doOnceWin)
 		{
 			timeUntilScoreReset=30*60;
-			redScoreText.text="RED TEAM WINS!";
+			redScoreText.text="TEAM A WINS!";
 			doOnceWin=true;
 		}
 		if(blueTeamScore>=numberOfPointsToWin && !doOnceWin)
 		{
 			timeUntilScoreReset=30*60;
-			blueScoreText.text="BLUE TEAM WINS!";
+			blueScoreText.text="TEAM B WINS!";
 			doOnceWin=true;
 		}
 	}

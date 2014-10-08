@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class Shoot : MonoBehaviour
@@ -74,6 +74,13 @@ public class Shoot : MonoBehaviour
 	public AnimationClip[] revolverAnims;
 	public AudioClip[] primaryReloadSounds;
 	public AudioClip[] primaryShootSounds;
+	public AudioClip teamANoticeSound;
+	public AudioClip teamBNoticeSound;
+	public Color[] beancolors;
+	public Color[] mainGcolors;
+	public Color[] specGcolors;
+	public Color[] heavGcolors;
+	public AudioClip[] teamAnnounces;
 
 	[RPC] public void RecalcHealthMeter(float healthNetworked)
 	{
@@ -165,26 +172,24 @@ public class Shoot : MonoBehaviour
 
 	[RPC] void SetTeam(int teamI)
 	{
+		player.renderer.material.color=beancolors[teamI];
+		mainGunR.renderer.material.color=mainGcolors[teamI];
+		specialGunR.renderer.material.color=specGcolors[teamI];
+		heavyGunR.renderer.material.color=heavGcolors[teamI];
 		if(teamI==0)
 		{
 			team="Red";
-			player.renderer.material.color=new Color(1, 0, 0);
-			mainGunR.renderer.material.color=new Color(0.65f, 0.25f, 0.25f);
-			specialGunR.renderer.material.color=new Color(0.75f, 0.25f, 0.25f);
-			heavyGunR.renderer.material.color=new Color(0.85f, 0.25f, 0.25f);
-			respawnPoint=NetworkManager.redSpawnV;
-			NetworkManager.redPlayers+=1;
+			respawnPoint=netMan.redSpawnV;
+			netMan.redPlayers+=1;
 		}
 		else if(teamI==1)
 		{
 			team="Blue";
-			player.renderer.material.color=new Color(0, 0, 1);
-			mainGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.65f);
-			specialGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.75f);
-			heavyGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.85f);
-			respawnPoint=NetworkManager.blueSpawnV;
-			NetworkManager.bluePlayers+=1;
+			respawnPoint=netMan.blueSpawnV;
+			netMan.bluePlayers+=1;
 		}
+		audio.clip=teamAnnounces[teamI];
+		audio.Play();
 	}
 	
 	void Update()
@@ -221,26 +226,7 @@ public class Shoot : MonoBehaviour
 				int teamI=0;
 				if(team=="Blue")
 					teamI=1;
-				if(teamI==0)
-				{
-					team="Red";
-					player.renderer.material.color=new Color(1, 0, 0);
-					mainGunR.renderer.material.color=new Color(0.65f, 0.25f, 0.25f);
-					specialGunR.renderer.material.color=new Color(0.75f, 0.25f, 0.25f);
-					heavyGunR.renderer.material.color=new Color(0.85f, 0.25f, 0.25f);
-					respawnPoint=NetworkManager.redSpawnV;
-					NetworkManager.redPlayers+=1;
-				}
-				else if(teamI==1)
-				{
-					team="Blue";
-					player.renderer.material.color=new Color(0, 0, 1);
-					mainGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.65f);
-					specialGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.75f);
-					heavyGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.85f);
-					respawnPoint=NetworkManager.blueSpawnV;
-					NetworkManager.bluePlayers+=1;
-				}
+				mainGunR.renderer.material.color=mainGcolors[teamI];
 			}
 			if(Input.GetKeyUp(","))
 			{
@@ -272,26 +258,7 @@ public class Shoot : MonoBehaviour
 				int teamI=0;
 				if(team=="Blue")
 					teamI=1;
-				if(teamI==0)
-				{
-					team="Red";
-					player.renderer.material.color=new Color(1, 0, 0);
-					mainGunR.renderer.material.color=new Color(0.65f, 0.25f, 0.25f);
-					specialGunR.renderer.material.color=new Color(0.75f, 0.25f, 0.25f);
-					heavyGunR.renderer.material.color=new Color(0.85f, 0.25f, 0.25f);
-					respawnPoint=NetworkManager.redSpawnV;
-					NetworkManager.redPlayers+=1;
-				}
-				else if(teamI==1)
-				{
-					team="Blue";
-					player.renderer.material.color=new Color(0, 0, 1);
-					mainGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.65f);
-					specialGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.75f);
-					heavyGunR.renderer.material.color=new Color(0.25f, 0.25f, 0.85f);
-					respawnPoint=NetworkManager.blueSpawnV;
-					NetworkManager.bluePlayers+=1;
-				}
+				mainGunR.renderer.material.color=mainGcolors[teamI];
 			}
 			if((Input.GetButton("Horizontal") || Input.GetButton("Vertical")) && !Input.GetButton("Sprint"))
 			{
@@ -354,13 +321,13 @@ public class Shoot : MonoBehaviour
 				audio.Play();
 				if(team=="Red" && teamSubtract)
 				{
-					NetworkManager.redPlayers-=1f;
+					netMan.redPlayers-=1f;
 					teamSubtract=false;
 					netMan.blueTeamScore+=1;
 				}
 				if(team=="Blue" && teamSubtract)
 				{
-					NetworkManager.bluePlayers-=1f;
+					netMan.bluePlayers-=1f;
 					teamSubtract=false;
 					netMan.redTeamScore+=1;
 				}
@@ -376,11 +343,15 @@ public class Shoot : MonoBehaviour
 				{
 					if(netMan.blueTeamScore<netMan.numberOfPointsToWin)
 						timeUntilRespawn--;
+					else
+						timeUntilRespawn=respawnSpeed-1;
 				}
 				else if(team=="Blue")
 				{
 					if(netMan.redTeamScore<netMan.numberOfPointsToWin)
 						timeUntilRespawn--;
+					else
+						timeUntilRespawn=respawnSpeed-1;
 				}
 				networkView.RPC("EnableGun", RPCMode.All, 0, false);
 				mainGunOut=false;
@@ -391,25 +362,17 @@ public class Shoot : MonoBehaviour
 			}
 			if(health<1 && timeUntilRespawn<1)
 			{
-				primaryAmmoLeft=primaryClipsizes[0]*3;
-				ammoInMainGun=primaryClipsizes[0];
+				primaryAmmoLeft=primaryClipsizes[1]*3;
+				ammoInMainGun=primaryClipsizes[1];
 				specialAmmoLeft=specialGunClipsize*1;
 				ammoInSpecialGun=specialGunClipsize;
 				heavyAmmoLeft=heavyGunClipsize*0;
-				ammoInHeavyGun=heavyGunClipsize*0;
+				ammoInHeavyGun=heavyGunClipsize*1;
 				timeUntilRespawn=respawnSpeed;
 				RecalcAmmoMeter();
 				ammoCount.color=Color.white;
 				networkView.RPC("RecalcHealthMeter", RPCMode.All, maxhealth);
-				if(NetworkManager.redPlayers<NetworkManager.bluePlayers)
-				{
-					networkView.RPC("SetTeam", RPCMode.All, 0);
-				}
-				else if(NetworkManager.bluePlayers<NetworkManager.redPlayers)
-				{
-					networkView.RPC("SetTeam", RPCMode.All, 1);
-				}
-				else if(NetworkManager.redPlayers==NetworkManager.bluePlayers)
+				if(netMan.redPlayers==netMan.bluePlayers)
 				{
 					if(Random.Range(0, 10)<=5)
 					{
@@ -419,6 +382,14 @@ public class Shoot : MonoBehaviour
 					{
 						networkView.RPC("SetTeam", RPCMode.All, 1);
 					}
+				}
+				else if(netMan.redPlayers<netMan.bluePlayers+1)
+				{
+					networkView.RPC("SetTeam", RPCMode.All, 0);
+				}
+				else if(netMan.bluePlayers<netMan.redPlayers+1)
+				{
+					networkView.RPC("SetTeam", RPCMode.All, 1);
 				}
 				teamSubtract=true;
 				player.transform.position=respawnPoint;
