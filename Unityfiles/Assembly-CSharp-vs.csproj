@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\RandomTreeRotation.cs" />
+     <Compile Include="Assets\Scripts\BaseLightSettings.cs" />
      <Compile Include="Assets\Scripts\DeAttatchGui.cs" />
      <Compile Include="Assets\Scripts\Music.cs" />
      <Compile Include="Assets\Scripts\NetworkManager.cs" />

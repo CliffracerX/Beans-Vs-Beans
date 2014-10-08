@@ -81,6 +81,15 @@ public class Shoot : MonoBehaviour
 	public Color[] specGcolors;
 	public Color[] heavGcolors;
 	public AudioClip[] teamAnnounces;
+	public Color[] bscolors1;
+	public Color[] mgscolors1;
+	public Color[] sgscolors1;
+	public Color[] hgscolors1;
+	public Color[] bscolors2;
+	public Color[] mgscolors2;
+	public Color[] sgscolors2;
+	public Color[] hgscolors2;
+	public int currentMonth = 1;
 
 	[RPC] public void RecalcHealthMeter(float healthNetworked)
 	{
@@ -167,6 +176,16 @@ public class Shoot : MonoBehaviour
 			health=0;
 			timeUntilRespawn=2;
 		}
+		currentMonth = System.DateTime.Now.Month;
+		currentMonth-=1;
+		beancolors[0]=bscolors1[currentMonth];
+		beancolors[1]=bscolors2[currentMonth];
+		mainGcolors[0]=mgscolors1[currentMonth];
+		mainGcolors[1]=mgscolors2[currentMonth];
+		specGcolors[0]=sgscolors1[currentMonth];
+		specGcolors[1]=sgscolors2[currentMonth];
+		heavGcolors[0]=hgscolors1[currentMonth];
+		heavGcolors[1]=hgscolors2[currentMonth];
 	}
 
 	public void SetNetworkManager(NetworkManager net)
@@ -366,8 +385,8 @@ public class Shoot : MonoBehaviour
 			}
 			if(health<1 && timeUntilRespawn<1)
 			{
-				primaryAmmoLeft=primaryClipsizes[1]*3;
-				ammoInMainGun=primaryClipsizes[1];
+				primaryAmmoLeft=primaryClipsizes[1]*4-mainGunClipsize;
+				ammoInMainGun=mainGunClipsize;
 				specialAmmoLeft=specialGunClipsize*1;
 				ammoInSpecialGun=specialGunClipsize;
 				heavyAmmoLeft=heavyGunClipsize*0;
