@@ -76,6 +76,7 @@ public class NetworkManager : MonoBehaviour
 		float bPs = 0;
 		int bS = 0;
 		Vector3 bSP = Vector3.down;
+		int sTW = 0;
 		if(stream.isWriting)
 		{
 			rPs=redPlayers;
@@ -90,6 +91,8 @@ public class NetworkManager : MonoBehaviour
 			stream.Serialize(ref bS);
 			bSP=blueSpawnV;
 			stream.Serialize(ref bSP);
+			sTW=numberOfPointsToWin;
+			stream.Serialize(ref sTW);
 		}
 		else
 		{
@@ -105,6 +108,8 @@ public class NetworkManager : MonoBehaviour
 			blueTeamScore=bS;
 			stream.Serialize(ref bSP);
 			blueSpawnV=bSP;
+			stream.Serialize(ref sTW);
+			numberOfPointsToWin=sTW;
 		}
 	}
 
@@ -126,6 +131,30 @@ public class NetworkManager : MonoBehaviour
 	private void JoinServer(HostData hostData)
 	{
 		Network.Connect(hostData);
+	}
+
+	[RPC] void AddPlayers(int team, int amount)
+	{
+		if(team==0)
+		{
+			redPlayers+=amount;
+		}
+		else if(team==1)
+		{
+			bluePlayers+=amount;
+		}
+	}
+
+	[RPC] void AddScore(int team, int amount)
+	{
+		if(team==0)
+		{
+			redTeamScore+=amount;
+		}
+		else if(team==1)
+		{
+			blueTeamScore+=amount;
+		}
 	}
 
 	void OnConnectedToServer()

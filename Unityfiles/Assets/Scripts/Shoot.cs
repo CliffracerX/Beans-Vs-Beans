@@ -175,6 +175,7 @@ public class Shoot : MonoBehaviour
 		{
 			health=0;
 			timeUntilRespawn=2;
+			networkView.RPC("SetGun", 0, 0);
 		}
 		currentMonth = System.DateTime.Now.Month;
 		currentMonth-=1;
@@ -214,12 +215,44 @@ public class Shoot : MonoBehaviour
 		//audio.clip=teamAnnounces[teamI];
 		//audio.Play();
 	}
-	
-	void Update()
+
+	[RPC] void SetGun(int slot, int gun)
 	{
-		if(player.networkView.isMine)
+		if(slot==0)
 		{
-			if(Input.GetKeyUp("."))
+			if(gun==0)
+			{
+				primaryAmmoLeft+=ammoInMainGun;
+				ammoInMainGun=0;
+				mainGunClipsize=primaryClipsizes[0];
+				mainGunFireSpeed=primaryFireSpeed[0];
+				isAutoPrimary=autoPrimary[0];
+				reloadSounds[0]=primaryReloadSounds[0];
+				fireSounds[0]=primaryShootSounds[0];
+				mainGunAnims=revolverAnims;
+				if(primaryAmmoLeft>0)
+				{
+					int ammoUsed = mainGunClipsize - ammoInMainGun;
+					ammoInMainGun = mainGunClipsize;
+					primaryAmmoLeft-=ammoUsed;
+					if(primaryAmmoLeft<0)
+					{
+						ammoInMainGun+=primaryAmmoLeft;
+						primaryAmmoLeft=0;
+					}
+					RecalcAmmoMeter();
+				}
+				networkView.RPC("EnableGun", RPCMode.All, 0, false);
+				mainGunOut=false;
+				mainGun=revolver;
+				primaryDamage=primaryDamageL[0];
+				mainGunR=mainGun.transform.GetChild(0).gameObject;
+				int teamI=0;
+				if(team=="Blue")
+					teamI=1;
+				mainGunR.renderer.material.color=mainGcolors[teamI];
+			}
+			else if(gun==1)
 			{
 				primaryAmmoLeft+=ammoInMainGun;
 				ammoInMainGun=0;
@@ -251,37 +284,20 @@ public class Shoot : MonoBehaviour
 					teamI=1;
 				mainGunR.renderer.material.color=mainGcolors[teamI];
 			}
+		}
+	}
+	
+	void Update()
+	{
+		if(player.networkView.isMine)
+		{
+			if(Input.GetKeyUp("."))
+			{
+				networkView.RPC("SetGun", RPCMode.All, 0, 1);
+			}
 			if(Input.GetKeyUp(","))
 			{
-				primaryAmmoLeft+=ammoInMainGun;
-				ammoInMainGun=0;
-				mainGunClipsize=primaryClipsizes[0];
-				mainGunFireSpeed=primaryFireSpeed[0];
-				isAutoPrimary=autoPrimary[0];
-				reloadSounds[0]=primaryReloadSounds[0];
-				fireSounds[0]=primaryShootSounds[0];
-				mainGunAnims=revolverAnims;
-				if(primaryAmmoLeft>0)
-				{
-					int ammoUsed = mainGunClipsize - ammoInMainGun;
-					ammoInMainGun = mainGunClipsize;
-					primaryAmmoLeft-=ammoUsed;
-					if(primaryAmmoLeft<0)
-					{
-						ammoInMainGun+=primaryAmmoLeft;
-						primaryAmmoLeft=0;
-					}
-					RecalcAmmoMeter();
-				}
-				networkView.RPC("EnableGun", RPCMode.All, 0, false);
-				mainGunOut=false;
-				mainGun=revolver;
-				primaryDamage=primaryDamageL[0];
-				mainGunR=mainGun.transform.GetChild(0).gameObject;
-				int teamI=0;
-				if(team=="Blue")
-					teamI=1;
-				mainGunR.renderer.material.color=mainGcolors[teamI];
+				networkView.RPC("SetGun", RPCMode.All, 0, 0);
 			}
 			if((Input.GetButton("Horizontal") || Input.GetButton("Vertical")) && !Input.GetButton("Sprint"))
 			{
@@ -344,15 +360,15 @@ public class Shoot : MonoBehaviour
 				audio.Play();
 				if(team=="Red" && teamSubtract)
 				{
-					netMan.redPlayers-=1f;
+					netMan.networkView.RPC("AddPlayers", RPCMode.All, 0, -1);
 					teamSubtract=false;
-					netMan.blueTeamScore+=1;
+					netMan.networkView.RPC("AddScore", RPCMode.All, 1, 1);
 				}
 				if(team=="Blue" && teamSubtract)
 				{
-					netMan.bluePlayers-=1f;
+					netMan.networkView.RPC("AddPlayers", RPCMode.All, 1, -1);
 					teamSubtract=false;
-					netMan.redTeamScore+=1;
+					netMan.networkView.RPC("AddScore", RPCMode.All, 0, 1);
 				}
 				playerpos=player.transform.position;
 				playerpos.y-=1;
@@ -406,11 +422,11 @@ public class Shoot : MonoBehaviour
 						networkView.RPC("SetTeam", RPCMode.All, 1);
 					}
 				}
-				else if(netMan.redPlayers<netMan.bluePlayers+1)
+				else if(netMan.redPlayers<netMan.bluePlayers)
 				{
 					networkView.RPC("SetTeam", RPCMode.All, 0);
 				}
-				else if(netMan.bluePlayers<netMan.redPlayers+1)
+				else if(netMan.bluePlayers<netMan.redPlayers)
 				{
 					networkView.RPC("SetTeam", RPCMode.All, 1);
 				}
